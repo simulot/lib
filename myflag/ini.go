@@ -12,15 +12,15 @@ import (
 	"strings"
 )
 
-type IniValues map[string]string
+type KVStore map[string]string
 
 var reSplitINI = regexp.MustCompile(`^([^=]*)(?: *= *)(.*)$`)
 
-func readIniFile(name string) (IniValues, error) {
-	ini := IniValues{}
+func ReadKVFile(name string) (KVStore, error) {
+	ini := KVStore{}
 	f, err := os.Open(name)
 	if err != nil {
-		return nil, fmt.Errorf("can't read ini file '%s': %w", name, err)
+		return nil, fmt.Errorf("can't read key value file '%s': %w", name, err)
 	}
 
 	defer f.Close()
@@ -46,7 +46,7 @@ func readIniFile(name string) (IniValues, error) {
 
 func Parse(exeName string) error {
 	iniFile := filepath.Join(filepath.Dir(exeName), strings.TrimSuffix(filepath.Base(exeName), filepath.Ext(exeName))+".ini")
-	ini, err := readIniFile(iniFile)
+	ini, err := ReadKVFile(iniFile)
 	if err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
 			return err
